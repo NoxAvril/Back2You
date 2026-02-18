@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.Back2You" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#90CAF9</item>
+
+        <item name="android:windowBackground">#121212</item> <item name="colorSurface">#1E1E1E</item> <item name="colorOnSurface">#FFFFFF</item> </style>
+
+    <style name="Theme.Back2You" parent="Base.Theme.Back2You" />
+
+    <style name="CircleImage">
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>

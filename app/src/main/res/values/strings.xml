@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">Back2You</string>
+    <string name="home">Home</string>
+    <string name="post_item">Post Item</string>
+    <string name="privacy_tip_do_not_post_the_exact_location_for_found_items">Privacy Tip: Do not post the exact location for found items.</string>
+    <string name="brand_color_unique_marks">Brand, color, unique marks…</string>
+    <string name="additional_information">Additional Information</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="item_photo_required_for_found_items">Item Photo (Required for Found Items)</string>
+    <string name="category">Category</string>
+    <string name="found">Found</string>
+    <string name="lost">Lost</string>
+    <string name="item_name_e_g_blue_wallet">Item Name (e.g. Blue Wallet)</string>
+    <string name="report_item">Report Item</string>
+    <string name="preview_of_the_item_photo_to_be_uploaded">Preview of the item photo to be uploaded</string>
+    <string name="short_description_of_the_item_goes_here">Short description of the item goes here…</string>
+    <string name="item_title">Item Title</string>
+    <string name="profile">Profile</string>
+    <string name="hidden_from_public">Hidden from public</string>
+    <string name="user_example_com">user@example.com</string>
+    <string name="visible_to_everyone">Visible to everyone</string>
+    <string name="_1_234_567_890">+1 234 567 890</string>
+    <string name="contact_type">Contact Type</string>
+    <string name="enter_contacts_name_or_address">Enter Contacts name(or address)</string>
+    <string name="logout">Logout</string>
+    <string name="add_contact">+ Add Contact</string>
+    <string name="contact_information">Contact Information</string>
+    <string name="username">Username</string>
+    <string name="your_name">Your Name</string>
+    <string name="edit">Edit</string>
+    <string name="phone">Phone</string>
+
+    <string-array name="item_categories">
+        <item>-- Select Category --</item>
+        <item>Smartphone / Tablet</item>
+        <item>Laptop / Charger</item>
+        <item>Headphones / Earbuds</item>
+        <item>Power Bank / Cables</item>
+        <item>Wallet / Purse</item>
+        <item>Keys (Home/Car)</item>
+        <item>Eyeglasses / Sunglasses</item>
+        <item>Watch / Jewelry</item>
+        <item>Student ID / National ID</item>
+        <item>Passport / Driver\'s License</item>
+        <item>Bank Cards (Credit/Debit)</item>
+        <item>Notebooks / Textbooks</item>
+        <item>Backpack / Tote Bag</item>
+        <item>Clothing / Jacket</item>
+        <item>Water Bottle / Umbrella</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="contact_types">
+        <item>Phone</item>
+        <item>Email</item>
+        <item>WhatsApp</item>
+        <item>Messenger</item>
+        <item>Discord</item>
+        <item>Telegram</item>
+        <item>Instagram</item>
+        <item>Line</item>
+        <item>LinkedIn</item>
+        <item>Twitter</item>
+        <item>TikTok</item>
+    </string-array>
+
+
+</resources>

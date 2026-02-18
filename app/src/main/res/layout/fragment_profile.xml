@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:paddingTop="56dp"> <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:id="@+id/tvProfileTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvEditToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
+                android:text="@string/edit"
+                android:textColor="#2196F3"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:ignore="RelativeOverlap,TextContrastCheck" />
+        </RelativeLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivProfilePic"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:scaleType="centerCrop"
+                    android:src="@android:drawable/ic_menu_gallery"
+                    app:shapeAppearanceOverlay="@style/CircleImage"
+                    app:strokeColor="?attr/colorOnSurface"
+                    app:strokeWidth="2dp" />
+
+                <View
+                    android:id="@+id/vCameraOverlay"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:background="#80000000"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/CircleImage" />
+
+                <ImageView
+                    android:id="@+id/ivCameraIcon"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@android:drawable/ic_menu_camera"
+                    android:visibility="gone"
+                    app:tint="@android:color/white" />
+            </FrameLayout>
+
+            <EditText
+                android:id="@+id/etProfileName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints="name"
+                android:background="@null"
+                android:enabled="false"
+                android:gravity="center"
+                android:hint="@string/your_name"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:text="@string/username"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:ignore="VisualLintTextFieldSize" />
+
+            <View
+                android:layout_width="60dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="8dp"
+                android:background="#2196F3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="32dp"
+                android:letterSpacing="0.1"
+                android:text="@string/contact_information"
+                android:textAllCaps="true"
+                android:textColor="?attr/colorOutline"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:ignore="TextContrastCheck" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvContacts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_contact" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddContact"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/add_contact"
+                android:visibility="gone"
+                app:icon="@android:drawable/ic_input_add" />
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="40dp"
+                android:backgroundTint="#FF5252"
+                android:text="@string/logout"
+                android:textColor="@android:color/white"
+                app:cornerRadius="12dp"
+                tools:ignore="VisualLintButtonSize" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnThemeToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="20dp"
+        app:fabSize="mini"
+        android:src="@drawable/ic_night"
+        app:backgroundTint="?attr/colorSurface"
+        app:tint="@null"
+        app:elevation="4dp"
+        android:importantForAccessibility="no"/>
+
+</FrameLayout>
