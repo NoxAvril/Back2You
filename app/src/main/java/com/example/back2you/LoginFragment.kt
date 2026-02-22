@@ -13,7 +13,8 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import androidx.core.graphics.toColorInt
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
@@ -78,7 +79,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
             override fun updateDrawState(ds: TextPaint) {
                 super.updateDrawState(ds)
-                ds.color = Color.parseColor("#BB86FC")
+                ds.color = "#BB86FC".toColorInt()
                 ds.isUnderlineText = true
             }
         }

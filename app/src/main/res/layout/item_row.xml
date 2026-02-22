@@ -14,11 +14,18 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <ImageView
+            android:id="@+id/ivItemImage"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="Item Photo" />
+
         <TextView
             android:id="@+id/tvItemTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/item_title"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -26,16 +33,16 @@
             android:id="@+id/tvItemType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lost"
             android:textStyle="italic"
             android:textColor="#D32F2F" />
 
         <TextView
-            android:id="@+id/tvItemDescription"
+            android:id="@+id/tvFinderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/short_description_of_the_item_goes_here"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="?android:attr/textColorSecondary" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

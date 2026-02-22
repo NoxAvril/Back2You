@@ -19,7 +19,7 @@ class HomeAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_row, parent, false)
         return HomeViewHolder(view)
     }
 

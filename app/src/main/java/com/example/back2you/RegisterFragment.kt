@@ -3,66 +3,63 @@ package com.example.back2you
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.auth.userProfileChangeRequest
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.database.FirebaseDatabase
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     private lateinit var auth: FirebaseAuth
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        auth = Firebase.auth
-    }
+    private val database = FirebaseDatabase.getInstance().getReference("users")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        auth = FirebaseAuth.getInstance()
 
-        val etUser = view.findViewById<TextInputEditText>(R.id.etRegUsername)
-        val etEmail = view.findViewById<TextInputEditText>(R.id.etRegEmail)
-        val etPass = view.findViewById<TextInputEditText>(R.id.etRegPassword)
-        val etConfirm = view.findViewById<TextInputEditText>(R.id.etRegConfirmPassword)
-        val btnReg = view.findViewById<Button>(R.id.btnRegister)
+        val etName = view.findViewById<EditText>(R.id.etRegUsername)
+        val etEmail = view.findViewById<EditText>(R.id.etRegEmail)
+        val etPassword = view.findViewById<EditText>(R.id.etRegPassword)
+        val btnRegister = view.findViewById<Button>(R.id.btnRegister)
 
-        btnReg.setOnClickListener {
-            val username = etUser.text.toString().trim()
+        btnRegister.setOnClickListener {
+            val name = etName.text.toString().trim()
             val email = etEmail.text.toString().trim()
-            val pass = etPass.text.toString()
-            val confirm = etConfirm.text.toString()
+            val password = etPassword.text.toString().trim()
 
-            if (username.isEmpty() || email.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (pass != confirm) {
-                Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
 
-            // Create User
-            auth.createUserWithEmailAndPassword(email, pass)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        // Update DisplayName with Username
-                        val profileUpdates = userProfileChangeRequest {
-                            displayName = username
-                        }
+                    // 1. Update Firebase Auth Profile (for ProfileFragment)
+                    val profileUpdates = userProfileChangeRequest { displayName = name }
+                    user?.updateProfile(profileUpdates)
 
-                        auth.currentUser?.updateProfile(profileUpdates)?.addOnCompleteListener {
-                            Toast.makeText(context, "Account Created!", Toast.LENGTH_SHORT).show()
-                            // Go back to Login or Home
-                            parentFragmentManager.popBackStack()
+                    // 2. Save to Realtime Database (for others to see)
+                    val userMap = mapOf(
+                        "uid" to user?.uid,
+                        "name" to name,
+                        "email" to email
+                    )
+
+                    user?.uid?.let { uid ->
+                        database.child(uid).setValue(userMap).addOnSuccessListener {
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.fragment_container, HomeFragment())
+                                .commit()
                         }
-                    } else {
-                        Toast.makeText(context, "Registration Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
+                } else {
+                    Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
+            }
         }
     }
 }
