@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "752085918397",
+    "firebase_url": "https://back2you-259ac-default-rtdb.firebaseio.com",
+    "project_id": "back2you-259ac",
+    "storage_bucket": "back2you-259ac.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752085918397:android:0df1b6456a4da3e8730dd4",
+        "android_client_info": {
+          "package_name": "com.example.back2you"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDePgqQEC5z_u_DxM5Xf85v5BkYin4zCBg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
