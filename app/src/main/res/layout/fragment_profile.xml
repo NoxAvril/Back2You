@@ -1,51 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:padding="24dp"
+    android:fillViewport="true"
     android:background="?android:attr/windowBackground">
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/ivProfilePicture"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="40dp"
-        android:padding="4dp"
-        android:src="@android:drawable/ic_menu_gallery"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-        app:strokeColor="?attr/colorPrimary"
-        app:strokeWidth="2dp" />
-
-    <TextView
-        android:id="@+id/tvProfileName"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Loading Name..."
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvProfileEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Loading contacts..."
-        android:textSize="16sp"
-        android:textColor="?attr/colorOnSurfaceVariant" />
+        <!-- THEME TOGGLE -->
+        <ImageButton
+            android:id="@+id/btnDayNight"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_day"
+            android:contentDescription="Toggle Theme"
+            app:tint="?attr/colorOnSurface" />
 
-    <Button
-        android:id="@+id/btnLogout"
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Log Out"
-        app:icon="@android:drawable/ic_lock_power_off" />
+        <!-- PROFILE IMAGE -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivProfilePic"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="24dp"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_gallery"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="2dp" />
 
-</LinearLayout>
+        <!-- NAME -->
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Loading Name..."
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface" />
+
+        <!-- CONTACT COUNT -->
+        <TextView
+            android:id="@+id/tvContacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Loading contacts..."
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <!-- EDIT PROFILE -->
+        <Button
+            android:id="@+id/btnEdit"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Edit Profile" />
+
+        <!-- LOGOUT -->
+        <Button
+            android:id="@+id/btnLogout"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:text="Log Out"
+            app:icon="@android:drawable/ic_lock_power_off"
+            app:iconGravity="textStart" />
+
+    </LinearLayout>
+
+</ScrollView>

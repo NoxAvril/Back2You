@@ -1,15 +1,20 @@
 package com.example.back2you
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var bottomNav: BottomNavigationView
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. Load theme BEFORE super.onCreate to prevent flickering
+
         val sharedPref = getSharedPreferences("Settings", MODE_PRIVATE)
         val isDarkMode = sharedPref.getBoolean("DarkMode", false)
         applyTheme(isDarkMode)
@@ -17,10 +22,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        auth = FirebaseAuth.getInstance()
+        bottomNav = findViewById(R.id.bottom_navigation)
 
         if (savedInstanceState == null) {
-            replaceFragment(HomeFragment())
+            checkUserStatus()
         }
 
         bottomNav.setOnItemSelectedListener { item ->
@@ -33,14 +39,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // This is called from the Fragment to save and switch themes
-    fun toggleTheme() {
-        val sharedPref = getSharedPreferences("Settings", MODE_PRIVATE)
-        val isDarkMode = sharedPref.getBoolean("DarkMode", false)
-        val newMode = !isDarkMode
+    private fun checkUserStatus() {
 
-        sharedPref.edit().putBoolean("DarkMode", newMode).apply()
-        applyTheme(newMode)
+        val currentUser = auth.currentUser
+
+        if (currentUser == null) {
+            hideBottomNav()
+            replaceFragment(LoginFragment())
+        } else {
+
+            currentUser.reload()
+                .addOnCompleteListener { task ->
+
+                    if (task.isSuccessful) {
+                        showBottomNav()
+                        replaceFragment(HomeFragment())
+                    } else {
+                        auth.signOut()
+                        hideBottomNav()
+                        replaceFragment(LoginFragment())
+                    }
+                }
+        }
+    }
+
+    fun showBottomNav() {
+        bottomNav.visibility = View.VISIBLE
+    }
+
+    fun hideBottomNav() {
+        bottomNav.visibility = View.GONE
+    }
+
+    fun logout() {
+        auth.signOut()
+        hideBottomNav()
+        replaceFragment(LoginFragment())
+    }
+
+    fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 
     private fun applyTheme(isDark: Boolean) {
@@ -49,11 +89,5 @@ class MainActivity : AppCompatActivity() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
     }
 }

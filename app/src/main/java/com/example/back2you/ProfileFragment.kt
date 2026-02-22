@@ -1,75 +1,87 @@
 package com.example.back2you
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
-import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance().reference
 
-        val ivProfile = view.findViewById<ShapeableImageView>(R.id.ivProfilePicture)
-        val tvName = view.findViewById<TextView>(R.id.tvProfileName)
-        val tvContacts = view.findViewById<TextView>(R.id.tvProfileEmail)
+        val btnDayNight = view.findViewById<ImageButton>(R.id.btnDayNight)
+        val tvName = view.findViewById<TextView>(R.id.tvName)
+        val tvContacts = view.findViewById<TextView>(R.id.tvContacts)
+        val btnEdit = view.findViewById<Button>(R.id.btnEdit)
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
 
-        val currentUser = auth.currentUser
+        val user = auth.currentUser
 
-        if (currentUser == null) {
-            tvName.text = "Not Logged In"
+        if (user == null) {
+            (activity as? MainActivity)?.logout()
             return
         }
 
-        val uid = currentUser.uid
+        user.reload().addOnCompleteListener { task ->
 
-        // 🔥 Load User Profile Data
-        database.child("users").child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
+            if (!isAdded) return@addOnCompleteListener
 
-                    val username = snapshot.child("username").getValue(String::class.java)
-                    val profileImage = snapshot.child("profileImageUrl").getValue(String::class.java)
+            if (task.isSuccessful && auth.currentUser != null) {
 
-                    tvName.text = username ?: "Unknown User"
+                val updatedUser = auth.currentUser!!
 
-                    if (!profileImage.isNullOrEmpty()) {
-                        Glide.with(requireContext())
-                            .load(profileImage)
-                            .into(ivProfile)
-                    }
-                }
+                tvName.text = updatedUser.displayName ?: "User"
+                tvContacts.text = "0 contacts"
 
-                override fun onCancelled(error: DatabaseError) {}
-            })
+            } else {
+                (activity as? MainActivity)?.logout()
+            }
+        }
 
-        // 🔥 Load Contacts Count
-        database.child("contacts").child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val count = snapshot.childrenCount
-                    tvContacts.text = "Contacts: $count"
-                }
+        val sharedPref = requireActivity().getSharedPreferences("Settings", Context.MODE_PRIVATE)
+        val isDarkMode = sharedPref.getBoolean("DarkMode", false)
 
-                override fun onCancelled(error: DatabaseError) {}
-            })
+        updateThemeIcon(btnDayNight, isDarkMode)
 
-        // 🔥 Logout
+        btnDayNight.setOnClickListener {
+
+            val newMode = !isDarkMode
+
+            sharedPref.edit().putBoolean("DarkMode", newMode).apply()
+
+            if (newMode) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
+        btnEdit.setOnClickListener {
+            (activity as? MainActivity)?.replaceFragment(EditProfileFragment())
+        }
+
         btnLogout.setOnClickListener {
-            auth.signOut()
-            requireActivity().recreate()
+            (activity as? MainActivity)?.logout()
+            Toast.makeText(requireContext(), "Logged out", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateThemeIcon(button: ImageButton, isDark: Boolean) {
+        if (isDark) {
+            button.setImageResource(R.drawable.ic_night)
+        } else {
+            button.setImageResource(R.drawable.ic_day)
         }
     }
 }

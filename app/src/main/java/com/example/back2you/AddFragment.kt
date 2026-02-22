@@ -1,100 +1,159 @@
 package com.example.back2you
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import okhttp3.MultipartBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Retrofit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+import java.util.*
 
-class AddFragment : Fragment() {
+class AddFragment : Fragment(R.layout.fragment_add) {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_add, container, false)
+    private val auth = FirebaseAuth.getInstance()
+    private val database = FirebaseDatabase.getInstance().reference
 
-        // Initialize Views
+    private var imageUri: Uri? = null
+
+    private val imagePicker =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                imageUri = it.data?.data
+                view?.findViewById<ImageView>(R.id.ivItemPreview)
+                    ?.setImageURI(imageUri)
+            }
+        }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         val etTitle = view.findViewById<EditText>(R.id.etTitle)
         val rgType = view.findViewById<RadioGroup>(R.id.rgType)
-        val spinnerCategory = view.findViewById<Spinner>(R.id.spinnerCategory)
         val etDescription = view.findViewById<EditText>(R.id.etDescription)
         val layoutPhoto = view.findViewById<LinearLayout>(R.id.layoutPhotoUpload)
-        val ivPreview = view.findViewById<ImageView>(R.id.ivItemPreview)
         val btnUpload = view.findViewById<Button>(R.id.btnUploadPhoto)
         val btnSubmit = view.findViewById<Button>(R.id.btnSubmit)
 
-        // Setup Spinner
-        ArrayAdapter.createFromResource(
-            requireContext(),
-            R.array.item_categories,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinnerCategory.adapter = adapter
-        }
-
-        // TOGGLE PHOTO SECTION based on Lost/Found selection
-        rgType.setOnCheckedChangeListener { _, checkedId ->
-            if (checkedId == R.id.rbFound) {
-                layoutPhoto.visibility = View.VISIBLE
-            } else {
-                layoutPhoto.visibility = View.GONE
-                ivPreview.tag = null // Clear photo status if switching to Lost
-                ivPreview.setImageResource(android.R.drawable.ic_menu_camera)
-            }
-        }
-
-        // Mock Photo Upload
         btnUpload.setOnClickListener {
-            ivPreview.setImageResource(android.R.drawable.ic_menu_gallery)
-            ivPreview.tag = "selected"
-            Toast.makeText(context, "Photo attached", Toast.LENGTH_SHORT).show()
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            imagePicker.launch(intent)
         }
 
-        // SUBMIT VALIDATION
+        rgType.setOnCheckedChangeListener { _, checkedId ->
+            layoutPhoto.visibility =
+                if (checkedId == R.id.rbFound) View.VISIBLE else View.GONE
+        }
+
         btnSubmit.setOnClickListener {
+
             val title = etTitle.text.toString().trim()
-            val categoryPos = spinnerCategory.selectedItemPosition
+            val description = etDescription.text.toString().trim()
             val selectedTypeId = rgType.checkedRadioButtonId
 
-            if (title.isEmpty()) {
-                etTitle.error = "Title is required"
-                return@setOnClickListener
-            }
+            val currentUser = auth.currentUser ?: return@setOnClickListener
 
-            if (categoryPos == 0) {
-                Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val type = if (selectedTypeId == R.id.rbLost) "Lost" else "Found"
 
-            if (selectedTypeId == -1) {
-                Toast.makeText(context, "Select Lost or Found", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val itemId = database.child("items").push().key ?: UUID.randomUUID().toString()
 
-            // Photo is ONLY required if Found is selected
-            if (selectedTypeId == R.id.rbFound && ivPreview.tag == null) {
-                Toast.makeText(context, "Found items must have a photo", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
+            if (imageUri != null) {
+                uploadToCloudinary(imageUri!!, itemId, title, description, type, currentUser)
+            } else {
+                saveItem(itemId, title, description, type, currentUser, null)
             }
-
-            // SUCCESS
-            Toast.makeText(context, "Successfully posted: $title", Toast.LENGTH_LONG).show()
-            clearForm(etTitle, rgType, spinnerCategory, etDescription, ivPreview, layoutPhoto)
         }
-
-        return view
     }
 
-    private fun clearForm(etT: EditText, rg: RadioGroup, spn: Spinner, etD: EditText, iv: ImageView, layout: LinearLayout) {
-        etT.text.clear()
-        etD.text.clear()
-        rg.clearCheck()
-        spn.setSelection(0)
-        iv.setImageResource(android.R.drawable.ic_menu_camera)
-        iv.tag = null
-        layout.visibility = View.GONE
+    private fun uploadToCloudinary(
+        uri: Uri,
+        itemId: String,
+        title: String,
+        description: String,
+        type: String,
+        user: com.google.firebase.auth.FirebaseUser
+    ) {
+
+        try {
+            //  Convert Uri to temp file
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            val tempFile = File.createTempFile("upload", ".jpg", requireContext().cacheDir)
+            tempFile.outputStream().use { fileOut ->
+                inputStream?.copyTo(fileOut)
+            }
+
+            val requestFile = tempFile.asRequestBody("image/*".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("file", tempFile.name, requestFile)
+
+            val preset = "back2you"
+                .toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://api.cloudinary.com/v1_1/drbvfzozf/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            val service = retrofit.create(CloudinaryService::class.java)
+
+            service.uploadImage(body, preset)
+                .enqueue(object : Callback<CloudinaryResponse> {
+
+                    override fun onResponse(
+                        call: Call<CloudinaryResponse>,
+                        response: Response<CloudinaryResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val imageUrl = response.body()?.secure_url
+                            saveItem(itemId, title, description, type, user, imageUrl)
+                        } else {
+                            Toast.makeText(requireContext(), "Upload failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<CloudinaryResponse>, t: Throwable) {
+                        Toast.makeText(requireContext(), "Upload error", Toast.LENGTH_SHORT).show()
+                    }
+                })
+
+        } catch (_: Exception) {
+            Toast.makeText(requireContext(), "File processing failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveItem(
+        itemId: String,
+        title: String,
+        description: String,
+        type: String,
+        user: com.google.firebase.auth.FirebaseUser,
+        imageUrl: String?
+    ) {
+
+        val newItem = PostItem(
+            id = itemId,
+            title = title,
+            description = description,
+            type = type,
+            finderName = user.displayName ?: "Anonymous",
+            finderUid = user.uid,
+            imageUrl = imageUrl,
+            timestamp = System.currentTimeMillis()
+        )
+
+        database.child("items").child(itemId)
+            .setValue(newItem)
     }
 }

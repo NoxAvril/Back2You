@@ -13,9 +13,8 @@ data class PostItem(
     val type: String? = null,
     val finderName: String? = null,
     val finderUid: String? = null,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val timestamp: Long = System.currentTimeMillis()
 ) : Parcelable {
-
-    // Required empty constructor for Firebase
-    constructor() : this(null, null, null, null, null, null, null)
+    constructor() : this(null, null, null, null, null, null, null, 0)
 }

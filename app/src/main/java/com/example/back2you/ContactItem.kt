@@ -1,6 +1,8 @@
 package com.example.back2you
 
 data class ContactItem(
-    val label: String,
-    var value: String
+    var id: String = "",
+    var type: String = "",
+    var value: String = "",
+    var isPublic: Boolean = true
 )

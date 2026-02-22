@@ -13,7 +13,7 @@ class HomeAdapter(
     private val onItemClick: (PostItem) -> Unit
 ) : RecyclerView.Adapter<HomeAdapter.PostViewHolder>() {
 
-    inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val ivItemImage: ImageView = itemView.findViewById(R.id.ivItemImage)
         val tvItemTitle: TextView = itemView.findViewById(R.id.tvItemTitle)
@@ -34,9 +34,17 @@ class HomeAdapter(
         holder.tvItemType.text = item.type ?: "Unknown Type"
         holder.tvFinderName.text = item.finderName ?: "Unknown Finder"
 
-        Glide.with(holder.itemView.context)
-            .load(item.imageUrl)
-            .into(holder.ivItemImage)
+        // 🔥 Image Handling
+        if (!item.imageUrl.isNullOrEmpty()) {
+            holder.ivItemImage.visibility = View.VISIBLE
+
+            Glide.with(holder.itemView.context)
+                .load(item.imageUrl)
+                .centerCrop()
+                .into(holder.ivItemImage)
+        } else {
+            holder.ivItemImage.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener {
             onItemClick(item)

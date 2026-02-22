@@ -40,10 +40,10 @@ class ContactAdapter(
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         val item = contacts[position]
         holder.tvValue.text = item.value
-        holder.tvLabel.text = item.label
+        holder.tvLabel.text = item.type
 
         // Icon Logic
-        val iconRes = when (item.label) {
+        val iconRes = when (item.type) {
             "Phone" -> android.R.drawable.ic_menu_call
             "Email" -> android.R.drawable.ic_dialog_email
             "Discord", "Messenger", "WhatsApp", "Line", "Telegram" -> android.R.drawable.stat_notify_chat
@@ -52,7 +52,7 @@ class ContactAdapter(
         holder.ivIcon.setImageResource(iconRes)
 
         // Brand Color Logic
-        val colorHex = when (item.label) {
+        val colorHex = when (item.type) {
             "WhatsApp", "Line" -> "#4CAF50"
             "Messenger", "LinkedIn" -> "#0078FF"
             "Twitter" -> "#1DA1F2"
