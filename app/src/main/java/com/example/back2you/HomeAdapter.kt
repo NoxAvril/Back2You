@@ -6,31 +6,42 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class HomeAdapter(
     private val items: List<PostItem>,
     private val onItemClick: (PostItem) -> Unit
-) : RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
+) : RecyclerView.Adapter<HomeAdapter.PostViewHolder>() {
 
-    class HomeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivImage: ImageView = view.findViewById(R.id.ivItemImage)
-        val tvTitle: TextView = view.findViewById(R.id.tvItemTitle)
-        val tvFinder: TextView = view.findViewById(R.id.tvFinderName)
+    inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        val ivItemImage: ImageView = itemView.findViewById(R.id.ivItemImage)
+        val tvItemTitle: TextView = itemView.findViewById(R.id.tvItemTitle)
+        val tvItemType: TextView = itemView.findViewById(R.id.tvItemType)
+        val tvFinderName: TextView = itemView.findViewById(R.id.tvFinderName)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_row, parent, false)
-        return HomeViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_row, parent, false)
+        return PostViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val item = items[position]
-        holder.tvTitle.text = item.title
-        holder.tvFinder.text = "Found by: ${item.finderName}"
-        holder.ivImage.setImageResource(item.imageResId)
 
-        holder.itemView.setOnClickListener { onItemClick(item) }
+        holder.tvItemTitle.text = item.title ?: "No Title"
+        holder.tvItemType.text = item.type ?: "Unknown Type"
+        holder.tvFinderName.text = item.finderName ?: "Unknown Finder"
+
+        Glide.with(holder.itemView.context)
+            .load(item.imageUrl)
+            .into(holder.ivItemImage)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(item)
+        }
     }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount(): Int = items.size
 }

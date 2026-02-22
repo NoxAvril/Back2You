@@ -15,6 +15,7 @@ data class PostItem(
     val finderUid: String? = null,
     val imageUrl: String? = null
 ) : Parcelable {
+
     // Required empty constructor for Firebase
     constructor() : this(null, null, null, null, null, null, null)
 }

@@ -1,51 +1,75 @@
 package com.example.back2you
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
-import com.google.firebase.Firebase
+import com.google.firebase.database.*
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // 1. Initialize Firebase Auth
-        auth = Firebase.auth
-        val currentUser = auth.currentUser
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference
 
-        // 2. Initialize UI views
+        val ivProfile = view.findViewById<ShapeableImageView>(R.id.ivProfilePicture)
         val tvName = view.findViewById<TextView>(R.id.tvProfileName)
-        val tvEmail = view.findViewById<TextView>(R.id.tvProfileEmail)
+        val tvContacts = view.findViewById<TextView>(R.id.tvProfileEmail)
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
 
-        // 3. Inject dynamic data
-        if (currentUser != null) {
-            // If displayName is null (not set during signup), show a fallback
-            tvName.text = currentUser.displayName ?: "Authenticated User"
-            tvEmail.text = currentUser.email
+        val currentUser = auth.currentUser
+
+        if (currentUser == null) {
+            tvName.text = "Not Logged In"
+            return
         }
 
-        // 4. Handle Logout logic
+        val uid = currentUser.uid
+
+        // 🔥 Load User Profile Data
+        database.child("users").child(uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    val username = snapshot.child("username").getValue(String::class.java)
+                    val profileImage = snapshot.child("profileImageUrl").getValue(String::class.java)
+
+                    tvName.text = username ?: "Unknown User"
+
+                    if (!profileImage.isNullOrEmpty()) {
+                        Glide.with(requireContext())
+                            .load(profileImage)
+                            .into(ivProfile)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
+
+        // 🔥 Load Contacts Count
+        database.child("contacts").child(uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val count = snapshot.childrenCount
+                    tvContacts.text = "Contacts: $count"
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
+
+        // 🔥 Logout
         btnLogout.setOnClickListener {
             auth.signOut()
-            // Navigate back to Login (Ensure R.id.fragment_container is in your activity_main)
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, LoginFragment())
-                .commit()
+            requireActivity().recreate()
         }
-
-        return view
     }
 }

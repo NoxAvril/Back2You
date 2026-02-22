@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import android.os.Build
 
 class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
 
@@ -23,7 +24,7 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val item = if (android.Build.VERSION.SDK_INT >= android.Build.VERSION_CODES.TIRAMISU) {
+        val item = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable(ARG_ITEM, PostItem::class.java)
         } else {
             @Suppress("DEPRECATION")
