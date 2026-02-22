@@ -68,9 +68,8 @@
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/btn_dropdown" />
+            android:layout_height="48dp"
+            android:theme="@style/ThemeOverlay.AppCompat.DayNight" />
 
         <LinearLayout
             android:id="@+id/layoutPhotoUpload"

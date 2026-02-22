@@ -29,6 +29,7 @@
     <string name="your_name">Your Name</string>
     <string name="edit">Edit</string>
     <string name="phone">Phone</string>
+    <string name="found_by">Found by</string>
 
     <string-array name="item_categories">
         <item>-- Select Category --</item>
