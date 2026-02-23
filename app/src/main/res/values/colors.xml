@@ -3,4 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="purple">#BB86FC</color>
+    <color name="returned_green">#4CAF50</color>
+    <color name="default_button">#6200EE</color>
 </resources>

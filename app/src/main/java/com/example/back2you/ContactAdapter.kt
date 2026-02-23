@@ -39,46 +39,46 @@ class ContactAdapter(
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         val item = contacts[position]
+
         holder.tvValue.text = item.value
         holder.tvLabel.text = item.type
 
-        // Icon Logic
+        // Icon
         val iconRes = when (item.type) {
             "Phone" -> android.R.drawable.ic_menu_call
             "Email" -> android.R.drawable.ic_dialog_email
-            "Discord", "Messenger", "WhatsApp", "Line", "Telegram" -> android.R.drawable.stat_notify_chat
+            "Discord", "Messenger", "WhatsApp", "Line", "Telegram" ->
+                android.R.drawable.stat_notify_chat
             else -> android.R.drawable.ic_menu_share
         }
         holder.ivIcon.setImageResource(iconRes)
 
-        // Brand Color Logic
-        val colorHex = when (item.type) {
-            "WhatsApp", "Line" -> "#4CAF50"
-            "Messenger", "LinkedIn" -> "#0078FF"
-            "Twitter" -> "#1DA1F2"
-            "Discord" -> "#5865F2"
-            "Instagram" -> "#E1306C"
-            "Telegram" -> "#0088cc"
-            "TikTok" -> "#EE1D52"
-            else -> "#757575"
-        }
-
-        try {
-            holder.ivIcon.setColorFilter(colorHex.toColorInt())
+        // Brand Color
+        val color = try {
+            when (item.type) {
+                "WhatsApp", "Line" -> "#4CAF50".toColorInt()
+                "Messenger", "LinkedIn" -> "#0078FF".toColorInt()
+                "Twitter" -> "#1DA1F2".toColorInt()
+                "Discord" -> "#5865F2".toColorInt()
+                "Instagram" -> "#E1306C".toColorInt()
+                "Telegram" -> "#0088cc".toColorInt()
+                "TikTok" -> "#EE1D52".toColorInt()
+                else -> "#757575".toColorInt()
+            }
         } catch (_: Exception) {
-            holder.ivIcon.setColorFilter(Color.GRAY)
+            Color.GRAY
         }
 
-        // Only toggle visibility here, no listener creation
+        holder.ivIcon.setColorFilter(color)
+
+        // Edit mode visibility
         holder.btnDelete.visibility = if (isEditMode) View.VISIBLE else View.GONE
     }
 
     override fun getItemCount() = contacts.size
 
     fun setEditMode(enabled: Boolean) {
-        if (this.isEditMode != enabled) {
-            this.isEditMode = enabled
-            notifyItemRangeChanged(0, contacts.size)
-        }
+        this.isEditMode = enabled
+        notifyDataSetChanged()
     }
 }

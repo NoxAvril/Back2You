@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,6 +10,7 @@
     android:orientation="vertical"
     android:padding="20dp">
 
+    <!-- Back Button -->
     <ImageButton
         android:id="@+id/btnBackFromProfile"
         android:layout_width="48dp"
@@ -18,18 +20,20 @@
         android:src="@android:drawable/ic_menu_revert"
         app:tint="?attr/colorOnSurface" />
 
+    <!-- Profile Image (Cloudinary Loaded) -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivUserDetailAvatar"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:padding="2dp"
-        android:src="@drawable/ic_launcher_foreground"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_gallery"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
         app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="2dp" />
 
+    <!-- Username -->
     <TextView
         android:id="@+id/tvUserDetailName"
         android:layout_width="wrap_content"
@@ -37,10 +41,11 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:textColor="?attr/colorOnSurface"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         tools:text="User Name" />
 
+    <!-- Section Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,6 +55,7 @@
         android:textSize="14sp"
         android:textStyle="bold" />
 
+    <!-- Contacts Area -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -66,14 +72,15 @@
             android:id="@+id/tvEmptyContacts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No public contacts available"
-            android:textSize="16sp"
-            android:visibility="gone"
             android:layout_gravity="center"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            android:text="No public contacts available"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
     </FrameLayout>
 
+    <!-- Close Button -->
     <Button
         android:id="@+id/btnCloseProfile"
         style="@style/Widget.Material3.Button.TonalButton"

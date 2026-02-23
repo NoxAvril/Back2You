@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:attr/windowBackground">
 
     <LinearLayout
@@ -11,13 +12,16 @@
         android:padding="20dp">
 
         <!-- Back Button -->
-        <Button
+        <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Back" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="?attr/colorOnSurface" />
 
-        <!-- Image Container -->
+        <!-- Item Image -->
         <ImageView
             android:id="@+id/ivItemImage"
             android:layout_width="match_parent"
@@ -44,23 +48,69 @@
             android:layout_marginTop="8dp"
             android:textColor="?android:attr/textColorSecondary" />
 
-        <!-- Finder Name -->
-        <TextView
-            android:id="@+id/tvFinderName"
-            android:layout_width="wrap_content"
+        <!-- ================= USER SECTION ================= -->
+
+        <!-- User Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <!-- View Profile -->
+            <!-- User Profile Image -->
+            <ImageView
+                android:id="@+id/ivUserImage"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_profile_placeholder"
+                android:background="@drawable/circle_background"
+                android:padding="2dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <!-- Finder Name -->
+                <TextView
+                    android:id="@+id/tvFinderName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <!-- Public Contacts -->
+                <TextView
+                    android:id="@+id/tvPublicContacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- View Profile Button -->
         <Button
             android:id="@+id/btnViewProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnMarkReturned"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="View Finder Profile" />
+            android:text="Mark as Returned"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </ScrollView>

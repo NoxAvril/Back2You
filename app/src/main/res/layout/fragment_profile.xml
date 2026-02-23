@@ -58,6 +58,15 @@
             android:textSize="16sp"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
+        <!-- CONTACT LIST CONTAINER (NEW) -->
+        <LinearLayout
+            android:id="@+id/layoutContactList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:gravity="start" />
+
         <!-- EDIT PROFILE -->
         <Button
             android:id="@+id/btnEdit"

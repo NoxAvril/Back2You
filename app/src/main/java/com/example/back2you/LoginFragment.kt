@@ -58,9 +58,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.fragment_container, HomeFragment())
-                            .commit()
+                        (requireActivity() as MainActivity).showBottomNav()
+
+                        (requireActivity() as MainActivity)
+                            .replaceFragment(HomeFragment())
 
                     } else {
 

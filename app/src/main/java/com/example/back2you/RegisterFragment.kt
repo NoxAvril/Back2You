@@ -61,23 +61,32 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
 
-                        Toast.makeText(
-                            context,
-                            "Registration Successful",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val user = auth.currentUser!!
+                        val uid = user.uid
 
-                        (requireActivity() as MainActivity).showBottomNav()
+                        // 🔥 Save username to Realtime Database
+                        val userMap = mapOf(
+                            "username" to name
+                        )
 
-                        (requireActivity() as MainActivity)
-                            .replaceFragment(HomeFragment())
+                        com.google.firebase.database.FirebaseDatabase
+                            .getInstance()
+                            .getReference("users")
+                            .child(uid)
+                            .setValue(userMap)
+                            .addOnSuccessListener {
 
-                    } else {
-                        Toast.makeText(
-                            context,
-                            task.exception?.message ?: "Registration Failed",
-                            Toast.LENGTH_LONG
-                        ).show()
+                                Toast.makeText(
+                                    context,
+                                    "Registration Successful",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                (requireActivity() as MainActivity).showBottomNav()
+
+                                (requireActivity() as MainActivity)
+                                    .replaceFragment(HomeFragment())
+                            }
                     }
                 }
         }

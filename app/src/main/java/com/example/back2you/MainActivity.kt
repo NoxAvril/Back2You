@@ -30,10 +30,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomNav.setOnItemSelectedListener { item ->
+
+            val currentFragment =
+                supportFragmentManager.findFragmentById(R.id.fragment_container)
+
             when (item.itemId) {
-                R.id.nav_home -> replaceFragment(HomeFragment())
-                R.id.nav_add -> replaceFragment(AddFragment())
-                R.id.nav_profile -> replaceFragment(ProfileFragment())
+                R.id.nav_home -> {
+                    if (currentFragment !is HomeFragment)
+                        replaceFragment(HomeFragment())
+                }
+
+                R.id.nav_add -> {
+                    if (currentFragment !is AddFragment)
+                        replaceFragment(AddFragment())
+                }
+
+                R.id.nav_profile -> {
+                    if (currentFragment !is ProfileFragment)
+                        replaceFragment(ProfileFragment())
+                }
             }
             true
         }

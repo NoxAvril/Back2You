@@ -70,7 +70,10 @@
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:spinnerMode="dropdown"
+            android:focusable="true"
+            android:clickable="true"/>
 
         <!-- Photo Section -->
         <LinearLayout
