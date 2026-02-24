@@ -112,5 +112,14 @@
             android:text="Mark as Returned"
             android:visibility="gone"/>
 
+        <TextView
+            android:id="@+id/tvReturnedStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✓ This item has been returned"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+
     </LinearLayout>
 </ScrollView>

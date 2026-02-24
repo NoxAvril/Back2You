@@ -46,6 +46,7 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
         val tvDescription = view.findViewById<TextView>(R.id.tvItemDescription)
         val tvFinderName = view.findViewById<TextView>(R.id.tvFinderName)
         val tvPublicContacts = view.findViewById<TextView>(R.id.tvPublicContacts)
+        val tvReturnedStatus = view.findViewById<TextView>(R.id.tvReturnedStatus)
         val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
         val btnViewProfile = view.findViewById<Button>(R.id.btnViewProfile)
         val btnMarkReturned = view.findViewById<Button>(R.id.btnMarkReturned)
@@ -54,15 +55,12 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
 
         selectedItem?.let { item ->
 
-            // -----------------------------------
-            // Basic Item Info
-            // -----------------------------------
+            // -----------------------------
+            // BASIC INFO
+            // -----------------------------
             tvTitle.text = item.title ?: "No Title"
             tvDescription.text = item.description ?: "No Description"
 
-            // -----------------------------------
-            // Load Item Image (Cloudinary)
-            // -----------------------------------
             if (!item.imageUrl.isNullOrEmpty()) {
                 ivItemImage.visibility = View.VISIBLE
                 Glide.with(this)
@@ -73,19 +71,15 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
                 ivItemImage.visibility = View.GONE
             }
 
-            // -----------------------------------
-            // Dynamic Profile Button Text
-            // -----------------------------------
             val role = if (item.type == "Found") "Finder" else "Owner"
             btnViewProfile.text = "View $role Profile"
 
-            // -----------------------------------
-            // Load User Info From Firebase
-            // -----------------------------------
+            // -----------------------------
+            // LOAD USER INFO
+            // -----------------------------
             val uid = item.finderUid
 
             if (!uid.isNullOrEmpty()) {
-
                 FirebaseDatabase.getInstance()
                     .getReference("users")
                     .child(uid)
@@ -99,7 +93,6 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
 
                         tvFinderName.text = username ?: "User"
 
-                        // Load profile image from Cloudinary
                         if (!profileImage.isNullOrEmpty()) {
                             Glide.with(this)
                                 .load(profileImage)
@@ -107,7 +100,6 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
                                 .into(ivUserImage)
                         }
 
-                        // Load contacts list properly
                         val contactsNode = snapshot.child("contacts")
                         val contactsList = mutableListOf<String>()
 
@@ -124,39 +116,40 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
                         } else {
                             tvPublicContacts.visibility = View.GONE
                         }
+                    }
+            }
 
-                        if (contactsList.isNotEmpty()) {
-                            tvPublicContacts.visibility = View.VISIBLE
-                            tvPublicContacts.text = contactsList.joinToString("\n")
+            // -----------------------------
+            // LOAD RETURNED STATE FROM FIREBASE
+            // -----------------------------
+            item.id?.let { itemId ->
+                FirebaseDatabase.getInstance()
+                    .getReference("items")
+                    .child(itemId)
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+
+                        val isReturned =
+                            snapshot.child("returned").getValue(Boolean::class.java) ?: false
+
+                        item.returned = isReturned
+
+                        if (isReturned) {
+                            tvReturnedStatus.visibility = View.VISIBLE
                         } else {
-                            tvPublicContacts.visibility = View.GONE
+                            tvReturnedStatus.visibility = View.GONE
                         }
-                    }
-                    .addOnFailureListener {
-                        tvFinderName.text = "User"
+
+                        updateReturnedButtonUI(btnMarkReturned, isReturned)
                     }
             }
 
-            // -----------------------------------
-            // View Profile Click
-            // -----------------------------------
-            btnViewProfile.setOnClickListener {
-                val profileFragment =
-                    UserProfileFragment.newInstance(uid ?: "")
-
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, profileFragment)
-                    .addToBackStack(null)
-                    .commit()
-            }
-
-            // -----------------------------------
-            // MARK AS RETURNED (TOGGLE)
-            // -----------------------------------
+            // -----------------------------
+            // MARK AS RETURNED (OWNER ONLY)
+            // -----------------------------
             if (currentUser?.uid == item.finderUid) {
 
                 btnMarkReturned.visibility = View.VISIBLE
-                updateReturnedButtonUI(btnMarkReturned, item.returned)
 
                 btnMarkReturned.setOnClickListener {
 
@@ -175,7 +168,15 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
                             .child(itemId)
                             .updateChildren(updates)
                             .addOnSuccessListener {
+
                                 item.returned = newState
+
+                                if (newState) {
+                                    tvReturnedStatus.visibility = View.VISIBLE
+                                } else {
+                                    tvReturnedStatus.visibility = View.GONE
+                                }
+
                                 updateReturnedButtonUI(btnMarkReturned, newState)
                             }
                     }
@@ -184,19 +185,26 @@ class ItemDetailFragment : Fragment(R.layout.fragment_item_detail) {
             } else {
                 btnMarkReturned.visibility = View.GONE
             }
+
+            // -----------------------------
+            // PROFILE CLICK
+            // -----------------------------
+            btnViewProfile.setOnClickListener {
+                val profileFragment =
+                    UserProfileFragment.newInstance(uid ?: "")
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, profileFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
-        // -----------------------------------
-        // Back Button
-        // -----------------------------------
         btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
     }
 
-    // -----------------------------------
-    // Toggle UI Styling
-    // -----------------------------------
     private fun updateReturnedButtonUI(button: Button, isReturned: Boolean) {
 
         if (isReturned) {
